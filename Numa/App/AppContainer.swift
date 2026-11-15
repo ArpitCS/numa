@@ -15,4 +15,8 @@ final class AppContainer {
     func makeBrowserViewModel() -> BrowserViewModel {
         BrowserViewModel(engine: WebKitBrowserEngine())
     }
+
+    func makeTabManager() -> TabManager {
+        TabManager(engine: WebKitBrowserEngine())
+    }
 }

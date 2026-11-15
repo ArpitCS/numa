@@ -5,7 +5,8 @@ final class LaunchTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Sidebar"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Tabs"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.textFields["addressField"].exists)
+        XCTAssertTrue(app.buttons["New Tab"].exists)
     }
 }
