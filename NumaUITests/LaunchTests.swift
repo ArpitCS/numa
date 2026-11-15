@@ -5,9 +5,10 @@ final class LaunchTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Tabs"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Workspaces"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.textFields["addressField"].exists)
         XCTAssertTrue(app.buttons["New Tab"].exists)
+        XCTAssertTrue(app.buttons["New Workspace"].exists)
     }
 
     func testCanCreateAndCloseTab() {

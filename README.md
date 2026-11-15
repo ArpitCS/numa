@@ -32,12 +32,13 @@ This section is a high-level changelog. Keep it current as features are implemen
 - Same-page handling for links that request a new window
 - Tab model, tab manager, and selectable tab sidebar
 - Tab creation, selection, duplication, closing, and ⌘T/⌘W shortcuts
+- Workspace model, workspace switching, and independent tab collections
 
 ### Planned
 
 - M1: navigation integration coverage
 - M2: tab persistence and restoration
-- M3: workspaces
+- M3: workspace editing and interaction coverage
 - M4: command bar and split view
 - M5: history, bookmarks, downloads, and session restoration
 - M6: profiles, private browsing, and tab lifecycle management
