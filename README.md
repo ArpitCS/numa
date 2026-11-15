@@ -10,8 +10,8 @@ Numa is a native macOS browser inspired by Arc, focused on workspaces, tabs, and
 - Browser engine: `WKWebView` in production, with newer SwiftUI WebKit APIs being evaluated
 - Persistence: SwiftData for browser entities, SQLite with FTS5 for history/search, `UserDefaults` for preferences, and Keychain for credentials
 - Dependencies: none
-- Status: M0 foundation in progress
-- Local Debug builds do not require code signing; Release signing remains configured for later distribution work
+- Status: M0 foundation complete
+- Local Debug builds use ad-hoc signing and do not require a developer account; Release signing remains configured for later distribution work
 
 ## Feature track
 
@@ -25,10 +25,11 @@ This section is a high-level changelog. Keep it current as features are implemen
 - App composition root, window-scoped state, and `os.Logger` setup
 - Unit test target with a shared smoke-test scheme
 - Initial spacing and typography design tokens
+- Launch UI test for the native window placeholder
 
 ### Planned
 
-- M0: native window polish and launch UI test
+- M1: browser engine boundary and single-page navigation
 - M1: browser engine and single-page navigation
 - M2: tabs and sidebar
 - M3: workspaces
