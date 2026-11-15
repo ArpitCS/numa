@@ -10,6 +10,7 @@
 
 - Read this file fully at the start of every session. Re-read §1 and §11 before every task.
 - This file is the PRD, architecture reference, roadmap and working agreement. Keep it current (rule 1.9).
+- Keep `README.md` as the concise public-facing project summary and high-level feature changelog; update it when features or baseline decisions change.
 - Project goal: a production-quality native macOS browser **and** deep understanding of Swift, SwiftUI, AppKit, WebKit and app architecture. When shipping speed conflicts with the owner's understanding, understanding wins.
 
 ## 1. Operating Rules (persistent)
@@ -37,13 +38,13 @@ Baseline inspected on 2026-11-15 before feature development.
 | Item | Value |
 |---|---|
 | Inspected on | 2026-11-15 |
-| Repo contents (top-level tree) | `.gitignore`, `Numa/`, `Numa.xcodeproj/` |
+| Repo contents (top-level tree) | `.gitignore`, `CLAUDE.md`, `README.md`, `Numa/`, `Numa.xcodeproj/` |
 | Xcode project / workspace / Package.swift | `Numa.xcodeproj` with `project.xcproj` and `project.xcworkspace`; no `Package.swift` |
 | Targets, schemes, bundle ID | `Numa` target and scheme; `devplaceholder.NX8RIDQU.Numa` |
 | Xcode version, installed macOS SDK | Xcode 27.2 (build 27B52), macOS SDK 27.2 |
-| `MACOSX_DEPLOYMENT_TARGET` (per target) | macOS 27.2 |
+| `MACOSX_DEPLOYMENT_TARGET` (per target) | macOS 26.0 |
 | Swift language mode / Swift version | Swift 5.0; default actor isolation and approachable concurrency enabled |
-| Architectures (ARM64 only vs universal) | ARM64 in the inspected macOS build; universal support is not configured |
+| Architectures (ARM64 only vs universal) | ARM64-only |
 | App Sandbox + entitlements present | App Sandbox enabled; no entitlements file is currently tracked |
 | Existing source files and their responsibilities | `Numa/MyApp.swift`: app entry point and window; `Numa/ContentView.swift`: initial placeholder view and preview; asset catalog contains the default accent color |
 | Existing tests / test targets | None |
@@ -55,7 +56,7 @@ Baseline inspected on 2026-11-15 before feature development.
 ### Baseline gaps and actionables
 
 - The project is still the generated placeholder app, not the browser architecture described below.
-- The deployment target, binary distribution, persistence strategy, window architecture, and command-bar shortcuts remain open decisions D-001 through D-008.
+- Window architecture and command-bar shortcuts remain open decisions D-005 through D-008.
 - The placeholder bundle identifier must be replaced before distribution.
 - A test target, logging setup, and architecture folders should be added incrementally with the relevant milestone rather than pre-created speculatively.
 - Future feature work should use dedicated branches; this initial documentation and Git hygiene change belongs on `main`.
@@ -120,7 +121,7 @@ Page summary, page Q&A, extraction, tab search, semantic history. Investigate Ap
 
 ## 5. Platform Decisions
 
-**Minimum macOS version: ⚠ DECISION PENDING (D-001).** Do not hardcode a target until approved.
+**Minimum macOS version: macOS 26.0 (D-001).** This is an owner-approved Apple-Silicon-first target. APIs introduced after macOS 26 still require availability checks.
 
 | Capability | Believed minimum `[verify]` |
 |---|---|
@@ -129,11 +130,11 @@ Page summary, page Q&A, extraction, tab search, semantic history. Investigate Ap
 | SwiftUI `WebView` / `WebPage` | macOS 26 |
 | Foundation Models | macOS 26 + supported hardware |
 
-Proposed starting point: **macOS 15.4 deployment target**, with macOS 26-only APIs behind `if #available` and the engine protocol (§6). Rationale: owner-only daily driver on current hardware, SwiftData and per-profile data stores available without gating, extensions reachable without a second code path, newest APIs optional. Alternative: target the latest macOS and accept a smaller audience for faster access to new APIs. Final choice is the owner's; record it in §14.
+The selected target is **macOS 26.0**, with APIs introduced after macOS 26 behind `if #available` and the engine protocol (§6). This keeps the deployment target aligned with the newer SwiftUI WebKit prototype while preserving an engine boundary for fallback.
 
-Engine: **`WKWebView` hosted via `NSViewRepresentable`/AppKit is the default**, behind a protocol. Evaluate `WebPage`/`WebView` in a small prototype before adoption: confirm delegate/hook coverage for downloads, permissions, popups, custom context menus, interaction-state restoration and extension integration. Adopt only if it matches `WKWebView` on what we need. Record the result in §14.
+Engine: **`WKWebView` hosted via `NSViewRepresentable`/AppKit is the production implementation**, behind a protocol (D-003). Evaluate newer SwiftUI `WebPage`/`WebView` APIs in a small prototype before adoption: confirm delegate/hook coverage for downloads, permissions, popups, custom context menus, interaction-state restoration and extension integration. Adopt only if it matches `WKWebView` on what we need. Record the result in §14.
 
-Other: Apple Silicon first-class (ARM64); decide ARM64-only vs universal (D-002). App Sandbox on; request only needed entitlements (network client, camera, mic, location, user-selected file access for downloads) and justify each.
+Other: Apple Silicon first-class (ARM64-only, D-002). App Sandbox on; request only needed entitlements (network client, camera, mic, location, user-selected file access for downloads) and justify each.
 
 ## 6. Architecture
 
@@ -389,10 +390,10 @@ Iterative. Reorder or drop milestones by owner decision; advanced features are n
 
 Format: `ID — status — decision/question — date — evidence/source`. Status: OPEN, PROPOSED, DECIDED, REJECTED.
 
-- D-001 — OPEN — Minimum macOS version (see §5; proposal macOS 15.4).
-- D-002 — OPEN — ARM64-only vs universal binary.
-- D-003 — OPEN — `WKWebView` (hosted) vs SwiftUI `WebPage`/`WebView` as primary engine implementation.
-- D-004 — OPEN — Persistence split: what lives in SwiftData vs SQLite (candidates: tabs/workspaces in SwiftData; history in SQLite with FTS).
+- D-001 — DECIDED — Minimum macOS version is macOS 26.0 — 2026-11-15 — owner decision; aligns with the current SwiftUI/WebKit evaluation target.
+- D-002 — DECIDED — ARM64-only binary — 2026-11-15 — owner decision; no Intel compatibility requirement.
+- D-003 — DECIDED — Use hosted `WKWebView` for production and prototype newer SwiftUI `WebPage`/`WebView` APIs behind the engine boundary — 2026-11-15 — owner decision; prototype must verify required delegate and lifecycle coverage.
+- D-004 — DECIDED — Hybrid persistence: SwiftData for workspaces, tabs, bookmarks and download metadata; SQLite with FTS5 for history/search; UserDefaults for preferences; Keychain for credentials — 2026-11-15 — owner decision.
 - D-005 — OPEN — Window architecture: SwiftUI `WindowGroup` + AppKit bridge vs AppKit-led shell; multi-window support timing.
 - D-006 — OPEN — Command-bar shortcut conflicts (⌘T / ⌘L).
 - D-007 — OPEN — Favicon retrieval strategy.
