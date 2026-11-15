@@ -49,7 +49,7 @@ Baseline inspected on 2026-11-15 before feature development.
 | Existing source files and their responsibilities | `Numa/MyApp.swift`: app entry point and window; `Numa/ContentView.swift`: initial placeholder view and preview; asset catalog contains the default accent color |
 | Existing tests / test targets | None |
 | Existing dependencies (SPM, etc.) | None |
-| Code signing / team configured | Automatic signing; development team `U673S8NTA3`; placeholder bundle identifier |
+| Code signing / team configured | Debug signing disabled for local development; Release uses automatic signing with development team `U673S8NTA3`; placeholder bundle identifier |
 | Does it build and run today? | `xcodebuild -project Numa.xcodeproj -scheme Numa -configuration Debug -sdk macosx CODE_SIGNING_ALLOWED=NO build` succeeds; Xcode reports one AppIntents metadata warning because the framework is not linked |
 | Git state (branch, uncommitted changes) | Baseline was clean on `agents/claude-md-updates-and-git-setup`, aligned with `main`; setup changes are now being prepared |
 

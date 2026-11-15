@@ -11,6 +11,7 @@ Numa is a native macOS browser inspired by Arc, focused on workspaces, tabs, and
 - Persistence: SwiftData for browser entities, SQLite with FTS5 for history/search, `UserDefaults` for preferences, and Keychain for credentials
 - Dependencies: none
 - Status: M0 foundation in progress
+- Local Debug builds do not require code signing; Release signing remains configured for later distribution work
 
 ## Feature track
 

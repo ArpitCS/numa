@@ -36,6 +36,8 @@
       "build-settings": {
         "ARCHS": "arm64",
         "CODE_SIGN_STYLE": "Automatic",
+        "CODE_SIGNING_ALLOWED[config=Debug]": "NO",
+        "CODE_SIGNING_REQUIRED[config=Debug]": "NO",
         "CURRENT_PROJECT_VERSION": "1",
         "DEVELOPMENT_TEAM": "U673S8NTA3",
         "ENABLE_APP_SANDBOX": "YES",
@@ -68,19 +70,18 @@
         "SWIFT_VERSION": "5.0",
         "TARGETED_DEVICE_FAMILY": "1,2,7",
       },
-    },
-    {
+    }, {
       "name": "NumaTests",
       "id": "000000000000000100000001",
       "product": "Products/NumaTests.xctest",
       "product-type": "bundle.unit-test",
+      "dependencies": [
+        "Numa",
+      ],
       "build-phases": [
         "compile-sources",
         "frameworks",
         "resources",
-      ],
-      "dependencies": [
-        "Numa",
       ],
       "build-settings": {
         "ARCHS": "arm64",
