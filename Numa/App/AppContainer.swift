@@ -1,0 +1,14 @@
+import OSLog
+
+@MainActor
+final class AppContainer {
+    let logger: Logger
+
+    init(bundleIdentifier: String = Bundle.main.bundleIdentifier ?? "com.arpitcs.numa") {
+        logger = Logger(subsystem: bundleIdentifier, category: "app")
+    }
+
+    func makeWindowState() -> WindowState {
+        WindowState()
+    }
+}
