@@ -4,26 +4,111 @@ import SwiftUI
 struct ContentView: View {
     private let container: AppContainer
     @State private var windowState: WindowState
-    @State private var tabManager: TabManager
+    @State private var workspaceManager: WorkspaceManager
 
     init(container: AppContainer) {
         self.container = container
         _windowState = State(initialValue: container.makeWindowState())
-        _tabManager = State(initialValue: container.makeTabManager())
+        _workspaceManager = State(initialValue: container.makeWorkspaceManager())
     }
 
     var body: some View {
-        @Bindable var tabManager = tabManager
+        @Bindable var workspaceManager = workspaceManager
 
         NavigationSplitView(columnVisibility: $windowState.sidebarVisibility) {
-            TabSidebar(tabManager: tabManager)
+            WorkspaceSidebar(workspaceManager: workspaceManager)
         } detail: {
-            if let selectedTab = tabManager.selectedTab {
+            if let selectedTab = workspaceManager.selectedWorkspace?.tabManager.selectedTab {
                 BrowserView(viewModel: selectedTab.viewModel)
             }
         }
         .onAppear {
             container.logger.info("Main window appeared")
+        }
+    }
+}
+
+private struct WorkspaceSidebar: View {
+    let workspaceManager: WorkspaceManager
+    @State private var renameDraft = ""
+    @State private var isRenaming = false
+    @State private var isConfirmingDeletion = false
+
+    var body: some View {
+        @Bindable var workspaceManager = workspaceManager
+
+        VStack(spacing: 0) {
+            HStack {
+                Text("Workspaces")
+                    .font(NumaTypography.windowTitle)
+                if let selectedWorkspace = workspaceManager.selectedWorkspace {
+                    Text(selectedWorkspace.name)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("selectedWorkspaceName")
+                }
+                Spacer()
+                Button {
+                    workspaceManager.createWorkspace(named: "Workspace \(workspaceManager.workspaces.count + 1)")
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("New Workspace")
+
+                Button {
+                    renameDraft = workspaceManager.selectedWorkspace?.name ?? ""
+                    isRenaming = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+                .accessibilityLabel("Rename Workspace")
+
+                Button {
+                    isConfirmingDeletion = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .disabled(workspaceManager.workspaces.count == 1)
+                .accessibilityLabel("Delete Workspace")
+            }
+            .padding(.horizontal, NumaSpacing.medium)
+            .padding(.top, NumaSpacing.small)
+
+            Picker("Workspace", selection: $workspaceManager.selectedWorkspaceID) {
+                ForEach(workspaceManager.workspaces) { workspace in
+                    Text(workspace.name).tag(workspace.id)
+                }
+            }
+            .pickerStyle(.menu)
+            .padding(.horizontal, NumaSpacing.medium)
+            .padding(.vertical, NumaSpacing.small)
+            .accessibilityIdentifier("workspacePicker")
+
+            if let selectedWorkspace = workspaceManager.selectedWorkspace {
+                TabSidebar(tabManager: selectedWorkspace.tabManager)
+            }
+        }
+        .navigationTitle("Numa")
+        .alert("Rename Workspace", isPresented: $isRenaming) {
+            TextField("Workspace name", text: $renameDraft)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                guard let id = workspaceManager.selectedWorkspaceID as UUID? else {
+                    return
+                }
+                _ = workspaceManager.renameWorkspace(id, to: renameDraft)
+            }
+        }
+        .confirmationDialog(
+            "Delete this workspace?",
+            isPresented: $isConfirmingDeletion,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let id = workspaceManager.selectedWorkspaceID as UUID? {
+                    _ = workspaceManager.deleteWorkspace(id)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
         }
     }
 }
@@ -88,7 +173,7 @@ private struct TabSidebar: View {
             }
             .listStyle(.sidebar)
         }
-        .navigationTitle("Numa")
+        .navigationTitle("Tabs")
     }
 
     private func tabSelectionButton(_ tab: BrowserTab, index: Int) -> some View {

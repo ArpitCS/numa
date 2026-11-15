@@ -19,4 +19,11 @@ final class AppContainer {
     func makeTabManager() -> TabManager {
         TabManager(engine: WebKitBrowserEngine())
     }
+
+    func makeWorkspaceManager() -> WorkspaceManager {
+        WorkspaceManager(
+            engine: WebKitBrowserEngine(),
+            store: UserDefaultsWorkspaceStore()
+        )
+    }
 }
