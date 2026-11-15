@@ -24,10 +24,11 @@ This section is a high-level changelog. Keep it current as features are implemen
 - Repository instructions and generated-file ignore rules
 - App composition root, window-scoped state, and `os.Logger` setup
 - Unit test target with a shared smoke-test scheme
+- Initial spacing and typography design tokens
 
 ### Planned
 
-- M0: design system, native window polish, and launch UI test
+- M0: native window polish and launch UI test
 - M1: browser engine and single-page navigation
 - M2: tabs and sidebar
 - M3: workspaces

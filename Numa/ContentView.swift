@@ -13,9 +13,12 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $windowState.sidebarVisibility) {
             Text("Sidebar")
+                .font(NumaTypography.placeholder)
+                .padding(NumaSpacing.medium)
                 .navigationTitle("Numa")
         } detail: {
             Text("New Tab")
+                .font(NumaTypography.windowTitle)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .onAppear {
