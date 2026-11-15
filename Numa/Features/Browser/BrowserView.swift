@@ -43,11 +43,37 @@ struct BrowserView: View {
                     .progressViewStyle(.linear)
             }
 
-            BrowserWebView(webView: viewModel.page.webView)
+            if let errorMessage = viewModel.errorMessage {
+                BrowserErrorView(message: errorMessage, retry: viewModel.retry)
+            } else {
+                BrowserWebView(webView: viewModel.page.webView)
+            }
         }
         .onChange(of: viewModel.page.url) {
             viewModel.synchronizeAddressWithPage()
         }
+        .onChange(of: viewModel.page.navigationErrorMessage) {
+            guard let message = viewModel.page.navigationErrorMessage else {
+                return
+            }
+            viewModel.errorMessage = message
+        }
+    }
+}
+
+private struct BrowserErrorView: View {
+    let message: String
+    let retry: () -> Void
+
+    var body: some View {
+        ContentUnavailableView {
+            Label("Unable to Load Page", systemImage: "wifi.exclamationmark")
+        } description: {
+            Text(message)
+        } actions: {
+            Button("Try Again", action: retry)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

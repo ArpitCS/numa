@@ -28,11 +28,12 @@ This section is a high-level changelog. Keep it current as features are implemen
 - Launch UI test for the native window placeholder
 - Browser engine protocol and `WKWebView` adapter
 - Single-page browser view with address bar and navigation controls
+- URL-versus-search routing and user-visible navigation retry state
+- Same-page handling for links that request a new window
 
 ### Planned
 
-- M1: browser engine and single-page navigation
-- M1: error handling, popup handling, and navigation integration coverage
+- M1: navigation integration coverage
 - M2: tabs and sidebar
 - M3: workspaces
 - M4: command bar and split view

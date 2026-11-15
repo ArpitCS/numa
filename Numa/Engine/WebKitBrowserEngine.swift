@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 import WebKit
 
@@ -20,6 +21,7 @@ final class WebKitBrowserPage: NSObject, BrowserPage {
     var estimatedProgress = 0.0
     var canGoBack = false
     var canGoForward = false
+    var navigationErrorMessage: String?
 
     private var observations: [NSKeyValueObservation] = []
 
@@ -88,6 +90,7 @@ final class WebKitBrowserPage: NSObject, BrowserPage {
 extension WebKitBrowserPage: WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         isLoading = true
+        navigationErrorMessage = nil
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -96,6 +99,9 @@ extension WebKitBrowserPage: WKNavigationDelegate, WKUIDelegate {
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         isLoading = false
+        navigationErrorMessage = (error as NSError).code == NSURLErrorCancelled
+            ? nil
+            : error.localizedDescription
     }
 
     func webView(
@@ -104,5 +110,22 @@ extension WebKitBrowserPage: WKNavigationDelegate, WKUIDelegate {
         withError error: Error
     ) {
         isLoading = false
+        navigationErrorMessage = (error as NSError).code == NSURLErrorCancelled
+            ? nil
+            : error.localizedDescription
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        createWebViewWith configuration: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction,
+        windowFeatures: WKWindowFeatures
+    ) -> WKWebView? {
+        guard navigationAction.request.url != nil else {
+            return nil
+        }
+
+        webView.load(navigationAction.request)
+        return nil
     }
 }
