@@ -49,14 +49,14 @@ Baseline inspected on 2026-11-15 before feature development.
 | Existing source files and their responsibilities | `Numa/MyApp.swift`: app entry point and window; `Numa/ContentView.swift`: initial placeholder view and preview; asset catalog contains the default accent color |
 | Existing tests / test targets | None |
 | Existing dependencies (SPM, etc.) | None |
-| Code signing / team configured | Automatic signing; development team `U673S8NTA3`; placeholder bundle identifier |
+| Code signing / team configured | Debug uses ad-hoc signing without a developer account; Release uses automatic signing with development team `U673S8NTA3`; placeholder bundle identifier |
 | Does it build and run today? | `xcodebuild -project Numa.xcodeproj -scheme Numa -configuration Debug -sdk macosx CODE_SIGNING_ALLOWED=NO build` succeeds; Xcode reports one AppIntents metadata warning because the framework is not linked |
 | Git state (branch, uncommitted changes) | Baseline was clean on `agents/claude-md-updates-and-git-setup`, aligned with `main`; setup changes are now being prepared |
 
 ### Baseline gaps and actionables
 
 - The project is still the generated placeholder app, not the browser architecture described below.
-- Window architecture and command-bar shortcuts remain open decisions D-005 through D-008.
+- Command-bar shortcuts and remaining browser-product decisions remain open in D-006 through D-008.
 - The placeholder bundle identifier must be replaced before distribution.
 - A test target, logging setup, and architecture folders should be added incrementally with the relevant milestone rather than pre-created speculatively.
 - Future feature work should use dedicated branches; this initial documentation and Git hygiene change belongs on `main`.
@@ -394,7 +394,7 @@ Format: `ID — status — decision/question — date — evidence/source`. Stat
 - D-002 — DECIDED — ARM64-only binary — 2026-11-15 — owner decision; no Intel compatibility requirement.
 - D-003 — DECIDED — Use hosted `WKWebView` for production and prototype newer SwiftUI `WebPage`/`WebView` APIs behind the engine boundary — 2026-11-15 — owner decision; prototype must verify required delegate and lifecycle coverage.
 - D-004 — DECIDED — Hybrid persistence: SwiftData for workspaces, tabs, bookmarks and download metadata; SQLite with FTS5 for history/search; UserDefaults for preferences; Keychain for credentials — 2026-11-15 — owner decision.
-- D-005 — OPEN — Window architecture: SwiftUI `WindowGroup` + AppKit bridge vs AppKit-led shell; multi-window support timing.
+- D-005 — DECIDED — Use SwiftUI `WindowGroup` as the application shell with AppKit bridges for `WKWebView`, menus, responder-chain behavior, and specialized windows; begin with one primary browser window while keeping state window-scoped for future multi-window support — 2026-11-15 — owner decision.
 - D-006 — OPEN — Command-bar shortcut conflicts (⌘T / ⌘L).
 - D-007 — OPEN — Favicon retrieval strategy.
 - D-008 — OPEN — Distribution: Developer ID direct vs Mac App Store (sandbox/review implications for a browser).
