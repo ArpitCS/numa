@@ -17,9 +17,7 @@ struct ContentView: View {
                 .padding(NumaSpacing.medium)
                 .navigationTitle("Numa")
         } detail: {
-            Text("New Tab")
-                .font(NumaTypography.windowTitle)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            BrowserView(container: container)
         }
         .onAppear {
             container.logger.info("Main window appeared")

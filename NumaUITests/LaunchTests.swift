@@ -6,6 +6,6 @@ final class LaunchTests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.staticTexts["Sidebar"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["New Tab"].exists)
+        XCTAssertTrue(app.textFields["addressField"].exists)
     }
 }
