@@ -11,4 +11,8 @@ final class AppContainer {
     func makeWindowState() -> WindowState {
         WindowState()
     }
+
+    func makeBrowserViewModel() -> BrowserViewModel {
+        BrowserViewModel(engine: WebKitBrowserEngine())
+    }
 }
