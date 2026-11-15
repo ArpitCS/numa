@@ -5,8 +5,8 @@ import WebKit
 struct BrowserView: View {
     @State private var viewModel: BrowserViewModel
 
-    init(container: AppContainer) {
-        _viewModel = State(initialValue: container.makeBrowserViewModel())
+    init(viewModel: BrowserViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     var body: some View {
