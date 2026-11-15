@@ -5,18 +5,32 @@ import Observation
 @Observable
 final class WorkspaceManager {
     private let engine: WebKitBrowserEngine
+    private let store: WorkspaceStore
 
     private(set) var workspaces: [Workspace]
     var selectedWorkspaceID: Workspace.ID
 
-    init(engine: WebKitBrowserEngine) {
+    init(engine: WebKitBrowserEngine, store: WorkspaceStore) {
         self.engine = engine
-        let workspace = Workspace(
-            name: "Personal",
-            tabManager: TabManager(engine: engine)
-        )
-        workspaces = [workspace]
-        selectedWorkspaceID = workspace.id
+        self.store = store
+
+        let savedState = store.load()
+        let records = savedState.workspaces.isEmpty
+            ? [WorkspaceRecord(id: UUID(), name: "Personal")]
+            : savedState.workspaces
+        let restoredWorkspaces = records.map {
+            Workspace(
+                id: $0.id,
+                name: $0.name,
+                tabManager: TabManager(engine: engine)
+            )
+        }
+        workspaces = restoredWorkspaces
+        let restoredSelection = savedState.selectedID.flatMap { id in
+            restoredWorkspaces.contains { $0.id == id } ? id : nil
+        }
+        selectedWorkspaceID = restoredSelection ?? restoredWorkspaces[0].id
+        persist()
     }
 
     var selectedWorkspace: Workspace? {
@@ -36,6 +50,7 @@ final class WorkspaceManager {
         )
         workspaces.append(workspace)
         selectedWorkspaceID = workspace.id
+        persist()
         return workspace
     }
 
@@ -44,6 +59,7 @@ final class WorkspaceManager {
             return
         }
         selectedWorkspaceID = id
+        persist()
     }
 
     func renameWorkspace(_ id: Workspace.ID, to name: String) -> Bool {
@@ -55,6 +71,7 @@ final class WorkspaceManager {
         }
 
         workspace.name = trimmedName
+        persist()
         return true
     }
 
@@ -69,6 +86,14 @@ final class WorkspaceManager {
         if selectedWorkspaceID == id {
             selectedWorkspaceID = workspaces[min(index, workspaces.count - 1)].id
         }
+        persist()
         return true
+    }
+
+    private func persist() {
+        store.save(
+            workspaces: workspaces.map { WorkspaceRecord(id: $0.id, name: $0.name) },
+            selectedID: selectedWorkspaceID
+        )
     }
 }

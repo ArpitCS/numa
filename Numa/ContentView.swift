@@ -30,6 +30,9 @@ struct ContentView: View {
 
 private struct WorkspaceSidebar: View {
     let workspaceManager: WorkspaceManager
+    @State private var renameDraft = ""
+    @State private var isRenaming = false
+    @State private var isConfirmingDeletion = false
 
     var body: some View {
         @Bindable var workspaceManager = workspaceManager
@@ -38,6 +41,11 @@ private struct WorkspaceSidebar: View {
             HStack {
                 Text("Workspaces")
                     .font(NumaTypography.windowTitle)
+                if let selectedWorkspace = workspaceManager.selectedWorkspace {
+                    Text(selectedWorkspace.name)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("selectedWorkspaceName")
+                }
                 Spacer()
                 Button {
                     workspaceManager.createWorkspace(named: "Workspace \(workspaceManager.workspaces.count + 1)")
@@ -45,6 +53,22 @@ private struct WorkspaceSidebar: View {
                     Image(systemName: "plus")
                 }
                 .accessibilityLabel("New Workspace")
+
+                Button {
+                    renameDraft = workspaceManager.selectedWorkspace?.name ?? ""
+                    isRenaming = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+                .accessibilityLabel("Rename Workspace")
+
+                Button {
+                    isConfirmingDeletion = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .disabled(workspaceManager.workspaces.count == 1)
+                .accessibilityLabel("Delete Workspace")
             }
             .padding(.horizontal, NumaSpacing.medium)
             .padding(.top, NumaSpacing.small)
@@ -64,6 +88,28 @@ private struct WorkspaceSidebar: View {
             }
         }
         .navigationTitle("Numa")
+        .alert("Rename Workspace", isPresented: $isRenaming) {
+            TextField("Workspace name", text: $renameDraft)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                guard let id = workspaceManager.selectedWorkspaceID as UUID? else {
+                    return
+                }
+                _ = workspaceManager.renameWorkspace(id, to: renameDraft)
+            }
+        }
+        .confirmationDialog(
+            "Delete this workspace?",
+            isPresented: $isConfirmingDeletion,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let id = workspaceManager.selectedWorkspaceID as UUID? {
+                    _ = workspaceManager.deleteWorkspace(id)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 }
 

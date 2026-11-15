@@ -21,6 +21,9 @@ final class AppContainer {
     }
 
     func makeWorkspaceManager() -> WorkspaceManager {
-        WorkspaceManager(engine: WebKitBrowserEngine())
+        WorkspaceManager(
+            engine: WebKitBrowserEngine(),
+            store: UserDefaultsWorkspaceStore()
+        )
     }
 }

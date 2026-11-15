@@ -35,4 +35,20 @@ final class LaunchTests: XCTestCase {
         app.buttons["tab-1"].click()
         XCTAssertTrue(app.textFields["addressField"].exists)
     }
+
+    func testCanCreateAndSelectWorkspace() {
+        let app = XCUIApplication()
+        app.launch()
+
+        let initialWorkspaceName = app.staticTexts["selectedWorkspaceName"]
+        XCTAssertTrue(initialWorkspaceName.waitForExistence(timeout: 5))
+        let initialValue = initialWorkspaceName.value as? String
+
+        XCTAssertTrue(app.buttons["New Workspace"].waitForExistence(timeout: 5))
+        app.buttons["New Workspace"].click()
+
+        let updatedWorkspaceName = app.staticTexts["selectedWorkspaceName"]
+        XCTAssertTrue(updatedWorkspaceName.waitForExistence(timeout: 5))
+        XCTAssertNotEqual(updatedWorkspaceName.value as? String, initialValue)
+    }
 }
