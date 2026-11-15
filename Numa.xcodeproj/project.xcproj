@@ -32,6 +32,7 @@
         "resources",
       ],
       "build-settings": {
+        "ARCHS": "arm64",
         "CODE_SIGN_STYLE": "Automatic",
         "CURRENT_PROJECT_VERSION": "1",
         "DEVELOPMENT_TEAM": "U673S8NTA3",
@@ -123,7 +124,7 @@
     "GCC_WARN_UNUSED_VARIABLE": "YES",
     "IPHONEOS_DEPLOYMENT_TARGET": "27.2",
     "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES",
-    "MACOSX_DEPLOYMENT_TARGET": "27.2",
+    "MACOSX_DEPLOYMENT_TARGET": "26.0",
     "MTL_ENABLE_DEBUG_INFO[config=Debug]": "INCLUDE_SOURCE",
     "MTL_ENABLE_DEBUG_INFO[config=Release]": "NO",
     "MTL_FAST_MATH": "YES",
