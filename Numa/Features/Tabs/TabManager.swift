@@ -1,5 +1,14 @@
 import Observation
 
+enum TabShortcut {
+    static func character(for index: Int) -> Character? {
+        guard (0..<9).contains(index) else {
+            return nil
+        }
+        return Character(String(index + 1))
+    }
+}
+
 @MainActor
 @Observable
 final class TabManager {
@@ -37,6 +46,13 @@ final class TabManager {
         selectedTabID = id
     }
 
+    func selectTab(at index: Int) {
+        guard tabs.indices.contains(index) else {
+            return
+        }
+        selectedTabID = tabs[index].id
+    }
+
     func closeTab(_ id: BrowserTab.ID) {
         guard let index = tabs.firstIndex(where: { $0.id == id }) else {
             return
@@ -60,8 +76,8 @@ final class TabManager {
 
         let duplicate = newTab(select: false)
         duplicate.viewModel.addressText = tab.viewModel.addressText
-        if let url = tab.viewModel.page.url {
-            duplicate.viewModel.page.load(url)
+        if !duplicate.viewModel.addressText.isEmpty {
+            duplicate.viewModel.submitAddress()
         }
         return duplicate
     }

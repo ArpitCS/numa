@@ -43,26 +43,30 @@ private struct TabSidebar: View {
                     Image(systemName: "plus")
                 }
                 .accessibilityLabel("New Tab")
+                .keyboardShortcut("t", modifiers: .command)
+
+                Button {
+                    if let selectedTabID = tabManager.selectedTabID {
+                        tabManager.closeTab(selectedTabID)
+                    }
+                } label: {
+                    Image(systemName: "xmark")
+                }
+                .accessibilityLabel("Close Tab")
+                .keyboardShortcut("w", modifiers: .command)
             }
             .padding(.horizontal, NumaSpacing.medium)
             .padding(.vertical, NumaSpacing.small)
 
             List(selection: $tabManager.selectedTabID) {
-                ForEach(tabManager.tabs) { tab in
+                ForEach(Array(tabManager.tabs.enumerated()), id: \.element.id) { index, tab in
                     HStack(spacing: NumaSpacing.small) {
-                        if tab.isLoading {
-                            ProgressView()
-                                .controlSize(.small)
+                        if let shortcut = TabShortcut.character(for: index) {
+                            tabSelectionButton(tab, index: index)
+                                .keyboardShortcut(KeyEquivalent(shortcut), modifiers: .command)
                         } else {
-                            Image(systemName: "globe")
-                                .foregroundStyle(.secondary)
+                            tabSelectionButton(tab, index: index)
                         }
-
-                        Text(tab.title)
-                            .lineLimit(1)
-
-                        Spacer()
-
                         Button {
                             tabManager.closeTab(tab.id)
                         } label: {
@@ -85,6 +89,29 @@ private struct TabSidebar: View {
             .listStyle(.sidebar)
         }
         .navigationTitle("Numa")
+    }
+
+    private func tabSelectionButton(_ tab: BrowserTab, index: Int) -> some View {
+        Button {
+            tabManager.selectTab(tab.id)
+        } label: {
+            HStack(spacing: NumaSpacing.small) {
+                if tab.isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: "globe")
+                        .foregroundStyle(.secondary)
+                }
+
+                Text(tab.title)
+                    .lineLimit(1)
+
+                Spacer()
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("tab-\(index + 1)")
     }
 }
 

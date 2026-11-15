@@ -3,6 +3,12 @@ import XCTest
 
 @MainActor
 final class TabManagerTests: XCTestCase {
+    func testTabShortcutsOnlySupportTheFirstNineTabs() {
+        XCTAssertEqual(TabShortcut.character(for: 0), "1")
+        XCTAssertEqual(TabShortcut.character(for: 8), "9")
+        XCTAssertNil(TabShortcut.character(for: 9))
+    }
+
     func testStartsWithOneSelectedTab() {
         let manager = TabManager(engine: WebKitBrowserEngine())
 
@@ -40,5 +46,23 @@ final class TabManagerTests: XCTestCase {
         XCTAssertEqual(manager.tabs.count, 1)
         XCTAssertNotEqual(manager.tabs.first?.id, tabID)
         XCTAssertEqual(manager.selectedTabID, manager.tabs.first?.id)
+    }
+
+    func testSelectTabByIndex() {
+        let manager = TabManager(engine: WebKitBrowserEngine())
+        let secondTab = manager.newTab(select: false)
+
+        manager.selectTab(at: 1)
+
+        XCTAssertEqual(manager.selectedTabID, secondTab.id)
+    }
+
+    func testSelectTabByIndexIgnoresInvalidIndex() {
+        let manager = TabManager(engine: WebKitBrowserEngine())
+        let initialSelection = manager.selectedTabID
+
+        manager.selectTab(at: 2)
+
+        XCTAssertEqual(manager.selectedTabID, initialSelection)
     }
 }
